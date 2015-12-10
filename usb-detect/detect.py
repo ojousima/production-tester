@@ -2,18 +2,20 @@
 
 import sys
 import usb.core
+import time
 
 
 def detectSegger():
   
-    # find USB devices
-    dev = usb.core.find(find_all=True)
+    # find Nordic Segger JLink
+    try:
+        dev = usb.core.find(idVendor=0x1366, idProduct=0x1015)
+    except AttributeError: #Gets thrown if unplugged while iterating devices
+        return False
 
-    # loop through devices, printing vendor and product ids in decimal and hex
-    for cfg in dev:
-        if cfg.idVendor == 0x1366 and cfg.idProduct == 0x1015:
-            return True
-    return False
+    if dev is None:
+            return False
+    return True
 
 
 if __name__ == "__main__":
@@ -27,6 +29,6 @@ if __name__ == "__main__":
             else:
                 print ("Segger was unplugged")
         wasConnected = connected 
-
+        time.sleep(1)
 
 
