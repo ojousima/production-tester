@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import subprocess
 import usb.core
 import time
 from jlink import jlink
@@ -18,14 +19,7 @@ def detectSegger():
             return False
     return True
 
-
 if __name__ == "__main__":
-    _jl=None
-
-    def jl():
-        global _jl
-        _jl = _jl or jlink.JLink()
-        return _jl
 
     wasConnected = detectSegger()
     while(True):
@@ -34,18 +28,16 @@ if __name__ == "__main__":
             if connected:
                 print ("Segger was plugged in")
                 print ("Erasing...")
-                jl().halt()
-                jl().erase_all()
+                subprocess.call(["nrfjprog", "--erase"])
                 print ("Done. Programming softdevice...")
-                jl().auto_program("softdevice.hex")
-                jl().reset()
+                subprocess.call(["nrfjprog", "--program", "softdevice.hex"])
                 print ("Done. Programming bootloader...")
-                jl().auto_program("bootloader.hex")
+                subprocess.call(["nrfjprog", "--program", "bootloader.hex"])
                 print ("Done. Reset.")
-                jl().reset()
-                jl().go()
+                subprocess.call(["nrfjprog", "--reset"])
             else:
                 print ("Segger was unplugged")
+                jl = None
         wasConnected = connected 
         time.sleep(1)
 
