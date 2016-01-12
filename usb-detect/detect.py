@@ -3,6 +3,7 @@
 import sys
 import usb.core
 import time
+from jlink import jlink
 
 
 def detectSegger():
@@ -19,13 +20,30 @@ def detectSegger():
 
 
 if __name__ == "__main__":
-    connected = detectSegger()
-    wasConnected = connected
+    _jl=None
+
+    def jl():
+        global _jl
+        _jl = _jl or jlink.JLink()
+        return _jl
+
+    wasConnected = detectSegger()
     while(True):
         connected = detectSegger()
         if connected != wasConnected:
             if connected:
                 print ("Segger was plugged in")
+                print ("Erasing...")
+                jl().halt()
+                jl().erase_all()
+                print ("Done. Programming softdevice...")
+                jl().auto_program("softdevice.hex")
+                jl().reset()
+                print ("Done. Programming bootloader...")
+                jl().auto_program("bootloader.hex")
+                print ("Done. Reset.")
+                jl().reset()
+                jl().go()
             else:
                 print ("Segger was unplugged")
         wasConnected = connected 
