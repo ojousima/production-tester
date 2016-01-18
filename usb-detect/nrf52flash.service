@@ -1,0 +1,9 @@
+[Unit]
+Description=nRF52 Flahser
+
+[Service]
+ExecStart=/usr/bin/python2 /home/alarm/production-tester/usb-detect/detect.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
