@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import sys
 import subprocess
 import usb.core
 import time
+import os.path
 from jlink import jlink
 
 
@@ -21,6 +22,7 @@ def detectSegger():
 
 if __name__ == "__main__":
 
+    dirPath = os.path.dirname(os.path.realpath(__file__)) + "/"
     wasConnected = detectSegger()
     while(True):
         connected = detectSegger()
@@ -30,9 +32,9 @@ if __name__ == "__main__":
                 print ("Erasing...")
                 subprocess.call(["nrfjprog", "--erase"])
                 print ("Done. Programming softdevice...")
-                subprocess.call(["nrfjprog", "--program", "softdevice.hex"])
+                subprocess.call(["nrfjprog", "--program", dirPath + "softdevice.hex"])
                 print ("Done. Programming bootloader...")
-                subprocess.call(["nrfjprog", "--program", "bootloader.hex"])
+                subprocess.call(["nrfjprog", "--program", dirPath + "bootloader.hex"])
                 print ("Done. Reset.")
                 subprocess.call(["nrfjprog", "--reset"])
             else:
